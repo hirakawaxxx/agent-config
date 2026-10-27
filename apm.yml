@@ -1,0 +1,14 @@
+name: agent-config
+version: 0.1.0
+description: hirakawaxxx の個人用エージェント設定パッケージ
+author: hirakawaxxx
+targets:
+  - claude
+  - codex
+  - cursor
+
+dependencies:
+  apm: []
+  mcp: []
+includes: auto
+scripts: {}
