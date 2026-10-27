@@ -13,6 +13,10 @@ dependencies:
     - anthropics/skills/skills/pdf#dbd4588f9e1033efb41dad4bef2f7947c8993d44
     - anthropics/skills/skills/pptx#dbd4588f9e1033efb41dad4bef2f7947c8993d44
     - anthropics/skills/skills/xlsx#dbd4588f9e1033efb41dad4bef2f7947c8993d44
+    # Anthropic 公式スキル（Apache 2.0）
+    - anthropics/skills/skills/skill-creator#dbd4588f9e1033efb41dad4bef2f7947c8993d44
+    - anthropics/skills/skills/mcp-builder#dbd4588f9e1033efb41dad4bef2f7947c8993d44
+    - anthropics/skills/skills/webapp-testing#dbd4588f9e1033efb41dad4bef2f7947c8993d44
     # ponytail (MIT): スキルのみ取り込む。フックは Claude プラグイン前提のため含めない
     - DietrichGebert/ponytail/skills/ponytail#v5.3.2
     - DietrichGebert/ponytail/skills/ponytail-review#v5.3.2
