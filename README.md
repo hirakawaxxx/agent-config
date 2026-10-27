@@ -10,6 +10,21 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 | `apm.yml` | マニフェスト（対象: `claude`, `codex`, `cursor`） |
 | `.apm/instructions/japanese-response.instructions.md` | 日本語で返答するルール |
 
+## フック
+
+| ファイル | 内容 |
+|---|---|
+| `.apm/hooks/notify-on-stop-claude-codex-hooks.json` | エージェントの応答完了時（`Stop`）に通知音を鳴らす |
+| `.apm/hooks/scripts/notify-on-stop.sh` | 再生スクリプト。macOS は Glass.aiff、Windows（Git Bash / WSL）は PowerShell、Linux は aplay / paplay / play で wav を鳴らす。音を出せない環境では何もしない |
+| `.apm/hooks/scripts/on-agent-complete.wav` | 通知音 |
+
+- 配置先: Claude Code は `.claude/settings.json`、Codex は `.codex/hooks.json`。
+  Cursor は `.claude/settings.json` のフックを読み込むので、二重に鳴らないよう Cursor には配らない
+  （ファイル名末尾の `-claude-codex-hooks` で配布先を指定している）。
+- 再生方法と音源は [pascalporedda/awesome-claude-code](https://github.com/pascalporedda/awesome-claude-code)
+  （MIT License, Copyright (c) 2024 Pascal Weinberger）を元にしている。元のフックにある会話ログの保存、
+  `npx tsx` での実行、権限設定は取り込んでいない。
+
 ## 取り込んでいる外部スキル
 
 `apm.yml` の `dependencies.apm` で、バージョンを固定して取り込んでいる。
