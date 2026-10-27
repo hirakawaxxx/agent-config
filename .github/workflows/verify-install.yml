@@ -10,8 +10,6 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     env:
-      # GitHub の仕様で GITHUB_ 始まりのシークレットは作れないため、APM_PAT から渡す
-      GITHUB_APM_PAT: ${{ secrets.APM_PAT }}
       PACKAGE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
     steps:
       - uses: actions/setup-python@v5

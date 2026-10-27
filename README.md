@@ -34,7 +34,6 @@ apm compile                            # Claude / Codex / Cursor 向けファイ
 ```
 
 Copilot 以外のツールは `apm compile` を実行しないとルールを読み込まない。
-リポジトリが非公開の場合は、環境変数 `GITHUB_APM_PAT` に GitHub トークンを設定する。
 
 生成されるファイル:
 
@@ -49,5 +48,4 @@ Claude Code / Cursor では「ファイルを扱うときだけ読み込む」�
 
 `.github/workflows/verify-install.yml` が、空のプロジェクトにこのパッケージを
 `apm install` → `apm compile` して、上の3ファイルが生成されることを確認する。
-非公開リポジトリから取得するため、リポジトリシークレット `APM_PAT`（agent-config を
-読める fine-grained PAT）を `GITHUB_APM_PAT` として渡している。
+公開リポジトリなのでトークンは不要。
