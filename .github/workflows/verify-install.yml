@@ -21,6 +21,9 @@ jobs:
       - name: Test guard hook rules
         run: sh tests/guard-test.sh
 
+      - name: Test verify-on-stop hook
+        run: sh tests/verify-on-stop-test.sh
+
       - name: Install APM
         run: pip install apm-cli==0.35.0
 
@@ -55,3 +58,8 @@ jobs:
           grep -q "guard.sh" .codex/hooks.json
           sh "$GITHUB_WORKSPACE/tests/guard-test.sh" .claude/hooks/agent-config/scripts/guard.sh
           echo "guard hook deployed"
+          grep -q "verify-on-stop.sh" .claude/settings.json
+          # Codex での差し戻しは未確認のため配らない
+          if grep -q "verify-on-stop.sh" .codex/hooks.json; then echo "verify-on-stop deployed to Codex"; exit 1; fi
+          sh "$GITHUB_WORKSPACE/tests/verify-on-stop-test.sh" .claude/hooks/agent-config/scripts/verify-on-stop.sh
+          echo "verify-on-stop hook deployed"

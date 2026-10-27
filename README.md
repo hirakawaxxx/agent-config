@@ -18,6 +18,7 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 | `.apm/hooks/scripts/notify-on-stop.sh` | 再生スクリプト。macOS は Glass.aiff、Windows（Git Bash / WSL）は PowerShell、Linux は aplay / paplay / play で wav を鳴らす。音を出せない環境では何もしない |
 | `.apm/hooks/scripts/on-agent-complete.wav` | 通知音 |
 | `.apm/hooks/guard-claude-codex-hooks.json` / `.apm/hooks/scripts/guard.sh` | 危険な操作と秘密ファイルへのアクセスを止めるガードレール（下記） |
+| `.apm/hooks/verify-on-stop-claude-hooks.json` / `.apm/hooks/scripts/verify-on-stop.sh` | 終了前にプロジェクトの検証を走らせ、失敗なら差し戻す（下記） |
 
 - 配置先: Claude Code は `.claude/settings.json`、Codex は `.codex/hooks.json`。
   Cursor は `.claude/settings.json` のフックを読み込むので、二重に鳴らないよう Cursor には配らない
@@ -43,6 +44,29 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 - 判定は文字列パターンなので、`bash -c` の入れ子や変数を使った書き方はすり抜けうる。最後の砦ではなく、うっかり防止として使う。
 - `git push --force-with-lease` は通す。
 - テスト: `sh tests/guard-test.sh`（CI でも実行）
+
+### 検証フック（`verify-on-stop.sh`）
+
+エージェントが応答を終えようとしたとき（`Stop`）に、プロジェクトの `.agent/verify.sh` を実行する。
+失敗したら終了コード 2 で止まるのを差し戻し、失敗内容を渡して修正を続けさせる（ループの「完了条件」）。
+
+- **使うプロジェクトだけで有効**: `.agent/verify.sh` が無いプロジェクトでは何もしない
+- **変更があるときだけ検証**: 未コミットか未 push の変更があるときだけ実行する。質問に答えただけのときは走らせない
+- **差し戻しの上限**: 1 回の依頼の中で 5 回まで（環境変数 `AGENT_VERIFY_MAX` で変更可）。超えたら止めずに人に任せる。
+  Claude Code 自体にも、連続 8 回で打ち切る上限がある
+- **配布先は Claude Code のみ**。Codex / Cursor で Stop の差し戻しが同じように効くかは未確認
+- 通知音フックは Stop のたびに鳴るので、差し戻しが起きると複数回鳴る
+
+`.agent/verify.sh` の例（プロジェクトに合わせて書く）:
+
+```sh
+#!/bin/sh
+set -e
+npm run lint
+npm test
+```
+
+テスト: `sh tests/verify-on-stop-test.sh`（CI でも実行）
 
 ## 取り込んでいる外部スキル
 
