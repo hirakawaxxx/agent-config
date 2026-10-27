@@ -9,6 +9,7 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 |---|---|
 | `apm.yml` | マニフェスト（対象: `claude`, `codex`, `cursor`） |
 | `.apm/instructions/japanese-response.instructions.md` | 日本語で返答するルール |
+| `.apm/skills/loop-state/SKILL.md` | ループ用の状態ファイル `.agent/state.json` の書き方と上限（下記） |
 
 ## フック
 
@@ -67,6 +68,19 @@ npm test
 ```
 
 テスト: `sh tests/verify-on-stop-test.sh`（CI でも実行）
+
+## 自作スキル
+
+### loop-state
+
+ループや長い作業を、セッションをまたいで続きから再開するためのスキル。
+状態は `.agent/state.json` 1 ファイルだけに置き（`goal` / `done_when` / `tasks` / `recent` / `lessons`）、毎回「読む → 一つだけ進める → 確かめる → 書いてコミット」の順で進める。
+
+- ファイルを増やさない: `.agent/` には `verify.sh` と `state.json` だけを置く
+- 大きさの上限: `recent` 5 件、`lessons` 10 件、`tasks` 15 件。超えたら古いものを消すか、まとめる。過去の詳細は Git の履歴で追う
+- 長く残すべき決まりごとは CLAUDE.md / AGENTS.md への追記を提案する
+- 目標を達成したら `state.json` を削除してコミットする
+- 上限はスキルの指示で守らせるもので、フックのような強制はしていない
 
 ## 取り込んでいる外部スキル
 
