@@ -33,6 +33,7 @@ Claude Code には `.claude/skills/`、Codex / Cursor には `.agents/skills/` �
 | スキル | 取得元 | ライセンス |
 |---|---|---|
 | `pdf` / `pptx` / `xlsx` | [anthropics/skills](https://github.com/anthropics/skills)（コミット固定） | ソース公開（非オープンソース）。個人利用 |
+| `skill-creator` / `mcp-builder` | [anthropics/skills](https://github.com/anthropics/skills)（コミット固定） | Apache 2.0 |
 | `ponytail` ほか5種（review / audit / debt / gain / help） | [DietrichGebert/ponytail](https://github.com/DietrichGebert/ponytail) `v5.3.2` | MIT |
 
 ponytail はスキルだけを取り込んでいる。本体のフック（セッション開始時に Node スクリプトを
