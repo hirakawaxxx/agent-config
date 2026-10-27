@@ -17,6 +17,7 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 | `.apm/hooks/notify-on-stop-claude-codex-hooks.json` | エージェントの応答完了時（`Stop`）に通知音を鳴らす |
 | `.apm/hooks/scripts/notify-on-stop.sh` | 再生スクリプト。macOS は Glass.aiff、Windows（Git Bash / WSL）は PowerShell、Linux は aplay / paplay / play で wav を鳴らす。音を出せない環境では何もしない |
 | `.apm/hooks/scripts/on-agent-complete.wav` | 通知音 |
+| `.apm/hooks/guard-claude-codex-hooks.json` / `.apm/hooks/scripts/guard.sh` | 危険な操作と秘密ファイルへのアクセスを止めるガードレール（下記） |
 
 - 配置先: Claude Code は `.claude/settings.json`、Codex は `.codex/hooks.json`。
   Cursor は `.claude/settings.json` のフックを読み込むので、二重に鳴らないよう Cursor には配らない
@@ -24,6 +25,24 @@ Claude Code / Codex / Cursor 向けのエージェント設定をまとめて配
 - 再生方法と音源は [pascalporedda/awesome-claude-code](https://github.com/pascalporedda/awesome-claude-code)
   （MIT License, Copyright (c) 2024 Pascal Weinberger）を元にしている。元のフックにある会話ログの保存、
   `npx tsx` での実行、権限設定は取り込んでいない。
+
+### ガードレール（`guard.sh`）
+
+`.apm/hooks/guard-claude-codex-hooks.json` から、ツール実行前（`PreToolUse`）に `.apm/hooks/scripts/guard.sh` を呼ぶ。
+止めるときは理由を出して終了コード 2 で終わり、エージェントは操作を中止する。
+
+| 種類 | 止める操作 |
+|---|---|
+| ファイル削除 | `rm -rf` でルート・ホーム・カレント・親ディレクトリ・`*`・`.git` を消す |
+| Git | `reset --hard`、`push --force` / `-f` / `+ref` / `--delete` / `--mirror`、`clean -f`、`checkout --` / `-f`、`switch --discard-changes` / `-f`、`restore`（`--staged` のみは可）、`branch -D`、`stash drop` / `clear` |
+| 外部スクリプト | `curl ... \| sh` / `wget ... \| bash` |
+| 秘密情報 | `.env` / `.env.*`（`.env.example` などのひな形は可）、SSH 秘密鍵、`.git-credentials`、`.netrc`、`.npmrc`、`.pypirc`、`~/.aws/credentials` の読み書き |
+
+- ルールは [kenryu42/claude-code-safety-net](https://github.com/kenryu42/claude-code-safety-net)
+  （MIT License, Copyright (c) 2026 J Liew）のルール一覧から、よく起きる事故に関わるものを選んだ。
+- 判定は文字列パターンなので、`bash -c` の入れ子や変数を使った書き方はすり抜けうる。最後の砦ではなく、うっかり防止として使う。
+- `git push --force-with-lease` は通す。
+- テスト: `sh tests/guard-test.sh`（CI でも実行）
 
 ## 取り込んでいる外部スキル
 
