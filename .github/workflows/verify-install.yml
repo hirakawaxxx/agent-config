@@ -1,0 +1,39 @@
+name: verify-install
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      # GitHub の仕様で GITHUB_ 始まりのシークレットは作れないため、APM_PAT から渡す
+      GITHUB_APM_PAT: ${{ secrets.APM_PAT }}
+      PACKAGE_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install APM
+        run: pip install apm-cli==0.35.0
+
+      - name: Install package into a scratch project
+        working-directory: ${{ runner.temp }}
+        run: |
+          mkdir consumer && cd consumer
+          git init -q
+          apm install -t claude,codex,cursor "${GITHUB_REPOSITORY}#${PACKAGE_REF}"
+          apm compile -t claude,codex,cursor
+
+      - name: Check generated files
+        working-directory: ${{ runner.temp }}/consumer
+        run: |
+          for f in .claude/rules/japanese-response.md .cursor/rules/japanese-response.mdc AGENTS.md; do
+            echo "=== $f"
+            cat "$f"
+            grep -q "日本語で返答する" "$f"
+          done
