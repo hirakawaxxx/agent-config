@@ -35,7 +35,7 @@ jobs:
             cat "$f"
             grep -q "日本語で返答する" "$f"
           done
-          for s in pdf pptx xlsx skill-creator mcp-builder ponytail ponytail-review ponytail-audit ponytail-debt ponytail-gain ponytail-help; do
+          for s in pdf pptx xlsx skill-creator mcp-builder webapp-testing ponytail ponytail-review ponytail-audit ponytail-debt ponytail-gain ponytail-help; do
             for d in .claude/skills .agents/skills; do
               test -f "$d/$s/SKILL.md" || { echo "missing $d/$s/SKILL.md"; exit 1; }
             done
