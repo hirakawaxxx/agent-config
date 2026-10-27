@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh ./scripts/notify-on-stop.sh ./scripts/on-agent-complete.wav",
+            "timeout": 10
+          }
+        ]
+      }
+    ]
+  }
+}

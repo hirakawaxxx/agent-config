@@ -41,3 +41,8 @@ jobs:
             done
           done
           echo "all skills deployed"
+          grep -q "notify-on-stop.sh" .claude/settings.json
+          grep -q "notify-on-stop.sh" .codex/hooks.json
+          test ! -e .cursor/hooks.json  # Cursor は .claude/settings.json のフックを読むため配らない
+          sh .claude/hooks/agent-config/scripts/notify-on-stop.sh .claude/hooks/agent-config/scripts/on-agent-complete.wav
+          echo "stop hook deployed"
